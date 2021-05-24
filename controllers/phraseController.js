@@ -4,10 +4,6 @@ const phrasesHelper = require('../helpers/phraseHelpers');
 const usersModel = require('../controllers/usersController');
 
 getAll = catchAsync(async (req, res) => {
-  const apiKey = req.headers['x-api-key'];
-  if(!apiKey) return res.status(401).send({ auth: false, message: 'No Key provided.' });
-  if(apiKey !== process.env.APIKEY) return res.status(401).send({ auth: false, message: 'Failed to authenticate Key.' });
-
   const response = await phrasesHelper.getAll(await phrasesModel.aggregate([
     { $lookup:
       {
@@ -29,11 +25,7 @@ getAll = catchAsync(async (req, res) => {
 });
 
 deletePhrase = catchAsync(async (req, res) => {
-  const apiKey = req.headers['x-api-key'];
-  if(!apiKey) return res.status(401).send({ auth: false, message: 'No Key provided.' });
-  if(apiKey !== process.env.APIKEY) return res.status(401).send({ auth: false, message: 'Failed to authenticate Key.' });
-
-  const id = req.params.id || ''
+  const id = req.params.id || '';
 
   const doesExist = await phrasesModel.exists({_id: id});
 
@@ -56,10 +48,6 @@ deletePhrase = catchAsync(async (req, res) => {
 
 
 getById = catchAsync(async (req, res) => {
-  const apiKey = req.headers['x-api-key'];
-  if(!apiKey) return res.status(401).send({ auth: false, message: 'No Key provided.' });
-  if(apiKey !== process.env.APIKEY) return res.status(401).send({ auth: false, message: 'Failed to authenticate Key.' });
-
   const id = req.params.id || ''
   
   const doesExist = await phrasesModel.exists({_id: id});
@@ -83,15 +71,11 @@ getById = catchAsync(async (req, res) => {
 
 
 create = catchAsync(async (req,res) => {
-  const apiKey = req.headers['x-api-key'];
-  if(!apiKey) return res.status(401).send({ auth: false, message: 'No Key provided.' });
-  if(apiKey !== process.env.APIKEY) return res.status(401).send({ auth: false, message: 'Failed to authenticate Key.' });
-
   if(req.body.user_id == '') {
-    return res.status(409).json({
-      statusCode: 409,
-      message: 'conflict',
-      data: { message: 'Usuário não informado' },
+    return res.status(400).json({
+      statusCode: 400,
+      message: 'error',
+      data: { message: 'Frase não informada' },
       auth: false,
     });
   }

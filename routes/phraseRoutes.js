@@ -1,17 +1,18 @@
 const express = require ('express');
 const router = express.Router();
 const phraseController = require('../controllers/phraseController');
+const authMiddleware = require('../middlewares/authMiddleware');
 
 router.route('/phrases/')
-  .get(phraseController.getAll)
+  .get(authMiddleware, phraseController.getAll)
 
 router.route('/phrases/create')
-  .post(phraseController.create)
+  .post(authMiddleware, phraseController.create)
   
 router.route('/phrases/delete/:id')
-  .delete(phraseController.deletePhrase)
+  .delete(authMiddleware, phraseController.deletePhrase)
   
 router.route('/phrases/:id')
-  .get(phraseController.getById)
+  .get(authMiddleware, phraseController.getById)
 
 module.exports = router;

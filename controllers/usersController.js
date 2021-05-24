@@ -6,11 +6,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 getAll = catchAsync(async (req, res) => {
-  const apiKey = req.headers['x-api-key'];
-  if(!apiKey) return res.status(401).send({ auth: false, message: 'No Key provided.' });
-  if(apiKey !== process.env.APIKEY) return res.status(401).send({ auth: false, message: 'Failed to authenticate Key.' });
-
-  const response = await usersHelper.getAll(await usersModel.find())
+   const response = await usersHelper.getAll(await usersModel.find())
   
     return res.status(200).json({
       statusCode: 200,
@@ -20,10 +16,6 @@ getAll = catchAsync(async (req, res) => {
 })
 
 login = catchAsync(async (req, res) => {
-  const apiKey = req.headers['x-api-key'];
-  if(!apiKey) return res.status(401).send({ auth: false, message: 'No Key provided.' });
-  if(apiKey !== process.env.APIKEY) return res.status(401).send({ auth: false, message: 'Failed to authenticate Key.' });
-
   const user = await usersModel.findOne({
     email: req.body.email,
   });
@@ -47,19 +39,20 @@ login = catchAsync(async (req, res) => {
     }
   });
 
+  const data = usersHelper.getById(user)
+
+  const token = jwt.sign({ id: data.id }, process.env.APIKEY, {});
+
   return res.status(200).json({
     statusCode: 200,
     message: 'success',
-    data: usersHelper.getById(user),
+    data: data,
     auth: true,
+    token: token
   });
 });
 
 create = catchAsync(async (req, res) => {
-  const apiKey = req.headers['x-api-key'];
-  if(!apiKey) return res.status(401).send({ auth: false, message: 'No Key provided.' });
-  if(apiKey !== process.env.APIKEY) return res.status(401).send({ auth: false, message: 'Failed to authenticate Key.' });
-
   const doesUserExist = await usersModel.exists({ email: req.body.email });
 
   if(doesUserExist === true) {
